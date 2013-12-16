@@ -1,0 +1,34 @@
+<% data = {} %>
+<% html = '' %>
+
+<% @lessons.each do |l| %>
+    <% grade     = l.teaching_relation.grade.number.to_s + '. ' + l.teaching_relation.grade.letter %>
+    <% plkst     = l.plkst.plkst %>
+    <% key       = k(l.day.day, plkst, grade) %>
+    <% data[key] = l %>
+<% end %>
+
+<% @grades.each do |grade| %>
+    <% html += ' <table><tr><th colspan="30">' + grade + '</th></tr><tr><td></td>' %>
+    <% @days.each {|d| html += '<th colspan="2">'+d+'</th>'} %>
+    <% html += '</tr>' %>
+
+    <% @plksts.each do |plkst| %>
+	<% html += '<tr><th>' + plkst + '</th>' %>
+
+	<% @days.each do |day| %>
+	    <% key = k(day, plkst, grade) %>
+
+	    <% if data[key] %>
+		<% html += '<td>' + data[key].teaching_relation.subject.subject + '</td><td>' + data[key].cabinet.nr.to_s + '</td>' %>
+	    <% else %>
+		<% html += '<td>..........</td><td></td>' %>
+	    <% end %>
+
+	<% end %>
+	<% html += '</tr>' %>
+    <% end %>
+    <% html += '</table>' %>
+<% end %>
+
+<%= raw(html) %>

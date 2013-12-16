@@ -1,0 +1,67 @@
+<% unless @lessons %>
+    <h3>You need to save at db at least one grade, one day and one plkst in order to view permanent lesson plan.</h3>
+<% else %>
+
+<% data = {} %>
+<% html = '' %>
+
+<%= errors_for(@lesson) %>
+<hr />
+
+<% @lessons.each do |l| %>
+    <% grade     = l.teaching_relation.grade.number.to_s + '. ' + l.teaching_relation.grade.letter %>
+    <% plkst     = l.plkst.plkst %>
+    <% key       = k(l.day.day, plkst, grade) %>
+    <% data[key] = l %>
+<% end %>
+
+<% @grades.each do |grade| %>
+    <% grade_formatted = grade.number.to_s + '. ' + grade.letter %>
+
+	<table>
+
+	    <!-- Table's header -->
+	    <tr>
+		<th colspan="30"><%= grade_formatted %></th>
+	    </tr>
+	    <tr>
+		<td></td>
+		<% @days.each do |d| %>
+		    <th colspan="3"><%= d.day %></th>
+		<% end %>
+	    </tr>
+
+	    <% @plksts.each do |plkst| %>
+		<tr>
+		    <th><%= plkst.plkst %></th>
+		    <% @days.each do |day| %>
+			<% key = k(day.day, plkst.plkst, grade_formatted) %>
+			<% if data[key] %>
+			    <td><%= data[key].teaching_relation.subject.subject %></td>
+			    <td><%= data[key].cabinet.nr.to_s %></td>
+			    <td><%= link_to('—', {:controller => 'lessons', :action => 'destroy', :id => data[key].id}, :class => 'minus') %></td>
+			<% else %>
+
+			    <% tr_options = [] %>
+			    <% TeachingRelation.where(:grade_id => grade.id).each do |tr| %>
+				<% tr_options << [tr.subject.subject + ' - ' + tr.teacher.first_name + ' ' + tr.teacher.last_name, tr.id] %> 
+			    <% end %>
+
+			    <% new_lesson = Lesson.new %>
+
+			    <td>
+				<%= select(new_lesson, :day_id,   [day.id],   {}, :hidden => true) %>
+				<%= select(new_lesson, :plkst_id, [plkst.id], {}, :hidden => true) %>
+				<%= select(new_lesson, :teaching_relation_id, tr_options) %>
+			    </td>
+			    <td><%= select(new_lesson, :cabinet_id, Cabinet.all.collect {|c| [c.nr, c.id]} ) %></td>
+			    <!-- lessons/create -->
+			    <td><%= button_tag('+') %></td>
+
+			<% end %>
+		    <% end %>
+		</tr> 
+	    <% end %>
+	</table>
+<% end %><!-- grades loop -->
+<% end %><!-- unless theres no lessons recieved from controller -->

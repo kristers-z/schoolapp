@@ -1,0 +1,55 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or vendor/assets/stylesheets of plugins, if any, can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the top of the
+ * compiled file, but it's generally better to create a new file per style scope.
+ *
+ *= require_self
+ *= require_tree .
+ */
+
+table {
+    border-collapse:collapse;
+    margin-bottom: 30px;
+}
+
+table td, th {
+    border: 1px solid black;
+    padding: 15px;
+}
+
+.inlinetables{
+    display:inline-block; 
+    margin-right:30px;
+}
+
+a.minus{
+
+    display:block;
+    text-decoration:none;
+    border:1px solid #BDBDBD;
+    border-radius:3px;
+    background-color:#E6E6E6;
+    color:black;
+    width:25px;
+    height:22px;
+    text-align:center;
+    line-height:150%;
+    margin-left:0px;
+}
+
+
+.inlinedivs{
+    display:inline-block;
+    margin-right:30px;
+    margin-bottom: 30px;
+}
+
+/* Get rid of linebreaks after fields with errors */
+div.field_with_errors {
+  display: inline;
+}

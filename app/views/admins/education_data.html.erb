@@ -1,0 +1,18 @@
+<%= table_for(@teaching_relations, {}, {'grade_id'   => Grade.all.collect   {|g| [g.number.to_s + '. ' + g.letter,  g.id] },
+				        'subject_id' => Subject.all.collect {|s| [s.subject, s.id]                        }, 
+				        'teacher_id' => Teacher.all.collect {|t| [t.first_name + ' ' + t.last_name, t.id] } 
+				       },
+				       @tr, 'admins/switch' ) %>
+<!-- sprintf means '1' => '01'  -->
+<% plkst_parameters = { 'minutes' => (0..59).collect {|n| sprintf('%02d', n) },
+			'hours'   => (0..24).collect {|n| sprintf('%02d', n) }} %>
+<hr />
+    <%= table_for(@subjects, {'subject'    => {:maxlength => 28, :size => 15}                       }, {}, @subject ) %>
+    <%= table_for(@cabinets, {'nr'         => {:maxlength => 3              }                       }, {}, @cabinet ) %>
+    <%= table_for(@days,     {'day'        => {:maxlength => 11             }                       }, {}, @day     ) %>
+    <%= table_for(@teachers, {'first_name' => {:maxlength => 15}, 'last_name' => {:maxlength => 15} }, {}, @teacher ) %>
+    <%= table_for(@grades,   {}, {'number' => 7..12, 'letter' => 'a'..'f'                           },     @grade   ) %>
+    <%= table_for(@plksts,   {}, {'nr'     => 0..10, 'plkst'  => plkst_parameters                   },     @plkst   ) %>
+<hr />
+
+<%= javascript_include_tag 'ajax/ajax_destroy.js', 'ajax/ajax_create.js' %>

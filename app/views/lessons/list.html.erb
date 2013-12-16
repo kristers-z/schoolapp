@@ -1,0 +1,162 @@
+
+<% data = {} %>
+<% html = '' %>
+
+<!-- Lessons list -->
+<% @lessons.each do |l| %>
+    <% grade     = l.teaching_relation.grade.number.to_s + '. ' + l.teaching_relation.grade.letter %>
+    <% plkst     = l.plkst.plkst %>
+    <% key       = k(l.day.day, plkst, grade) %>
+    <% data[key] = l %>
+<% end %>
+
+<% @grades.each do |grade| %>
+    <% html += ' <table><tr><th colspan="30">' + grade + '</th></tr><tr><td></td>' %>
+    <% @days.each {|d| html += '<th colspan="2">'+d+'</th>'} %>
+    <% html += '</tr>' %>
+
+    <% @plksts.each do |plkst| %>
+	<% html += '<tr><th>' + plkst + '</th>' %>
+
+	<% @days.each do |day| %>
+	    <% key = k(day, plkst, grade) %>
+
+	    <% if data[key] %>
+		<% html += '<td>' + data[key].teaching_relation.subject.subject + '</td><td>' + data[key].cabinet.nr.to_s + '</td>' %>
+	    <% else %>
+		<% html += '<td>..........</td><td></td>' %>
+	    <% end %>
+
+	<% end %>
+	<% html += '</tr>' %>
+    <% end %>
+    <% html += '</table>' %>
+<% end %>
+
+<%= raw(html) %>
+<hr />
+
+<!-- Teaching relations specialized table -->
+<div class="inlinedivs">
+
+    <% tr_html = '<tr><th colspan="10">Teaching relations</th></tr>  <tr> <th>ID</th> <th>Grade</th> <th>Subject</th> <th>Teacher</th> </tr>' %>
+    <% @ex_teaching_relations.each do |tr| %>
+	<% tr_html += '<tr>' %>
+	<% tr_html += '<td>' + tr.id.to_s + '</td>' %>
+	<% tr_html += '<td>' + tr.grade.number.to_s + '. ' + tr.grade.letter + '</td>' %>
+	<% tr_html += '<td>' + tr.subject.subject + '</td>' %>
+	<% tr_html += '<td>' + tr.teacher.first_name + ' ' + tr.teacher.last_name + '</td>' %>
+	<% tr_html += '</tr>' %>
+    <% end %>	
+    <%= raw('<table>' + tr_html + '</table>') %>
+
+    <%= form_for(:teaching_relation, :url => {:controller => 'teaching_relations', :action => 'create'}) do |f| %>
+
+	<%= f.select(:grade_id,   Grade.all.collect   {|g| [g.number.to_s + '. ' + g.letter,  g.id] } ) %>
+	<%= f.select(:subject_id, Subject.all.collect {|s| [s.subject,			   s.id] } ) %>
+	<%= f.select(:teacher_id, Teacher.all.collect {|t| [t.first_name + ' ' + t.last_name, t.id] } ) %>
+
+	<%= submit_tag('Create a teaching relation') %>
+    <% end %>
+    <hr />
+    
+    <%= errors_for(@tr) %>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Teaching relations raw data table -->
+<%= render(:partial => 'lessons/table', :locals => {:t_header => 'Teaching relations', :instvar => @ex_teaching_relations, :des_controller => 'teaching_relations', :des_action => 'destroy' } ) %>
+
+<!-- Raw list data tables -->
+<hr />
+
+<%= render(:partial => 'lessons/table', :locals => {:t_header => 'Teachers', :instvar => @ex_teachers, :des_controller => 'teachers', :des_action => 'destroy', :object => Teacher.new} ) %>
+<%= render(:partial => 'lessons/table', :locals => {:t_header => 'Subjects', :instvar => @ex_subjects, :des_controller => 'subjects', :des_action => 'destroy', :object => Subject.new} ) %>
+<%= render(:partial => 'lessons/table', :locals => {:t_header => 'Grades',   :instvar => @ex_grades,   :des_controller => 'grades',   :des_action => 'destroy', :object => Grade.new} ) %>
+<%= render(:partial => 'lessons/table', :locals => {:t_header => 'Plksts',   :instvar => @ex_plksts,   :des_controller => 'plksts',   :des_action => 'destroy', :object => Plkst.new} ) %>
+<%= render(:partial => 'lessons/table', :locals => {:t_header => 'Cabinets', :instvar => @ex_cabinets, :des_controller => 'cabinets', :des_action => 'destroy', :object => Cabinet.new} ) %>
+<%= render(:partial => 'lessons/table', :locals => {:t_header => 'Days',     :instvar => @ex_days,     :des_controller => 'days',     :des_action => 'destroy', :object => Day.new} ) %>
+
+<hr />
+
+<!-- Add data tables at the very end of document -->
+<div class="inlinedivs">
+    <%= form_for(:teacher, :url => {:controller => 'teachers', :action => 'create'}) do |f| %>
+	<%= f.label(:first_name) + f.text_field(:first_name, :maxlength => 20) %>
+	<br />
+	<%= f.label(:last_name)  + f.text_field(:last_name,  :maxlength => 20) %>
+	<br />
+	<%= submit_tag('Create a new teacher') %>
+    <% end %>
+    <%= errors_for(@teacher) %>
+</div>
+
+<div class="inlinedivs">
+    <%= form_for(:subject, :url => {:controller => 'subjects', :action => 'create'}) do |f| %>
+	<%= f.label(:subject) + f.text_field(:subject, :maxlength => 20) %>
+	<br />
+	<%= submit_tag('Create a new subject') %>
+    <% end %>
+    <%= errors_for(@subject) %>
+</div>
+
+<div class="inlinedivs">
+    <%= form_for(:grade, :url => {:controller => 'grades', :action => 'create'}) do |f| %>
+	<%= f.label(:number) + f.text_field(:number, :maxlength => 2) %>
+	<br />
+	<%= f.label(:letter, 'Letter__') + f.text_field(:letter, :maxlength => 1) %>
+	<br />
+	<%= submit_tag('Create a new grade') %>
+    <% end %>
+    <%= errors_for(@grade) %>
+</div>
+
+<div class="inlinedivs">
+    <%= form_for(:plkst, :url => {:controller => 'plksts', :action => 'create'}) do |f| %>
+	<%= f.label(:nr, 'Nr__') + f.text_field(:nr, :maxlength => 2) %>
+	<br />
+	<%= f.label(:plkst) + f.text_field(:plkst, :maxlength => 5) %>
+	<br />
+	<%= submit_tag('Create a new plkst') %>
+    <% end %>
+    <%= errors_for(@plkst) %>
+</div>
+
+<div class="inlinedivs">
+    <%= form_for(:cabinet, :url => {:controller => 'cabinets', :action => 'create'}) do |f| %>
+	<%= f.label(:nr) + f.text_field(:nr, :maxlength => 2) %>
+	<br />
+	<%= submit_tag('Create a new cabinet') %>
+    <% end %>
+    <%= errors_for(@cabinet) %>
+</div>
+
+<div class="inlinedivs">
+    <%= form_for(:day, :url => {:controller => 'days', :action => 'create'}) do |f| %>
+	<%= f.label(:day) + f.text_field(:day, :maxlength => 10) %>
+	<br />
+	<%= submit_tag('Create a new day') %>
+    <% end %>
+    <%= errors_for(@day) %>
+</div>

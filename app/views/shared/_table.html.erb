@@ -1,0 +1,102 @@
+<% excludes    = ['id', 'created_at', 'updated_at']                         %>
+<% labels      = {'first_name' => 'first name', 'last_name' => 'last name', 'grade_id' => 'grade', 'subject_id' => 'subject', 'teacher_id' => 'teacher'} %> 
+<% f_object    = rows.model.new %>
+<% fields_html = [] %>
+
+<%= form_for(f_object, method: :post, html: {class: 'inlinetables ajaxtables'} ) do |f| %>
+    <table id="<%= rows.model.name.pluralize.underscore.downcase %>_table">
+	<!-- Table label. -->
+	<tr><th colspan="<%= f_object.attributes.size %>"><%= rows.model.name.pluralize.underscore.humanize %></th></tr>
+
+	<!-- Column labels -->
+	<tr>
+	    <% f_object.attributes.each do |i| %>
+		<% unless excludes.include?(i.first) %>
+		    <% label = i.first %>
+		    <% label = labels[i.first] if labels.include?(i.first) %>
+		    <%= raw '<th>' + label.capitalize + '</th>' %>
+		<% end %>
+	    <% end %>
+	    <th>Action</th>
+	</tr>
+
+	<!-- Display data from DB -->
+	<% rows.each do |r| %>
+	    <tr class="ajaxfields" id="<%= rows.model.name.underscore.downcase + r.id.to_s %>">
+		<% r.attributes.each do |a| %>
+		    <% unless excludes.include?(a.first.to_s) %>
+
+			<!-- Should get rid of switch and let controller handle this crap -->
+
+
+			<% if switchpath %>
+			    <%= render :partial => switchpath, :locals => {:r => r, :a => a, :value => a.last.to_s} %>
+			<% else %>
+			    <%= raw '<td>' + a.last.to_s + '</td>' %>
+			<% end %>
+		    <% end %>
+		<% end %>
+		<td>
+
+
+
+
+
+
+
+
+
+			<%= link_to('Destroy', r, method: :delete ) %>
+
+
+
+
+
+
+
+
+
+
+
+		</td>
+	    </tr>
+	<% end %>
+
+	<!-- 'Add new' form -->
+	<tr id="new_<%= rows.model.name.underscore.downcase %>_row">
+	    <% f_object.attributes.each do |i| %>
+		<% label = i.first %>
+		<% unless excludes.include?(label) %>
+
+		    <% if selects.include?(label) %>
+			<% if selects[label].is_a?(Hash) %>
+
+			    <% selects[label].each do |sub_fieldname, sub_options| %>
+				<% fields_html << f.select(sub_fieldname, sub_options) %>
+			    <% end %>
+			    <td><%= raw fields_html.join(':') %></td>
+
+			<% else %>
+			    <td><%= f.select(label, selects[label]) %></td>
+			<% end %>
+		    <% else %>
+			<% args = {} %>
+			<% args = textargs[label] if textargs.include?(label) %>
+			<td><%= f.text_field(label, args) %></td>
+		    <% end %>
+
+		<% end %><!-- unless excludes -->
+	    <% end %><!-- f_object attr each do -->
+	    <th><%= f.submit('+') %></th>
+	</tr>
+
+	<!-- Display errors if they exist -->
+	<% if err = errors_for(holds_errors) %>
+	<tr>
+	    <td colspan="10">
+		<%= err %>
+	    </td>
+	</tr>
+	<% end %>
+    </table>
+<% end %><!-- form_for -->

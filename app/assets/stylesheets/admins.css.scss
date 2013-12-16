@@ -1,0 +1,11 @@
+// Place all the styles related to the Admins controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+//form.ajaxtables table tr:not(:last-child):not(:first-child):not(:nth-child(2)):hover {
+ //   background-color:orange;
+//}
+
+form.ajaxtables table tr.ajaxfields:hover{
+    background-color:orange;
+}

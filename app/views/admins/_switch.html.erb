@@ -1,0 +1,7 @@
+<% relpaths = {'grade_id'   => r.grade.number.to_s + '. ' + r.grade.letter,
+	       'subject_id' => r.subject.subject,
+	       'teacher_id' => r.teacher.first_name + ' ' + r.teacher.last_name} %>
+
+<% value = relpaths[a.first] if relpaths[a.first] %>
+
+<%= raw('<td>' + value + '</td>') %>
